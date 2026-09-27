@@ -47,11 +47,9 @@ st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 # STREAMLIT CACHING: Model Loading Optimization
 # ---------------------------------------------------------
 @st.cache_resource(show_spinner=False)
-def load_churn_models():
+def get_cached_artifacts():
     """Cache the model loading so it runs ONCE, saving CPU and I/O overhead."""
-    model = joblib.load('models/xgboost_model.pkl')
-    scaler = joblib.load('models/scaler.pkl')
-    return model, scaler
+    return load_saved_artifacts(models_dir="models")
 
 # ---------------------------------------------------------
 # HEADER / BANNER
@@ -74,10 +72,6 @@ st.markdown("""
 # ---------------------------------------------------------
 # LOAD MODEL ARTIFACTS
 # ---------------------------------------------------------
-@st.cache_resource(show_spinner=False)
-def get_cached_artifacts():
-    return load_saved_artifacts(models_dir="models")
-
 with st.spinner("Initializing ML Ensembles & Preprocessing Pipelines..."):
     artifacts = get_cached_artifacts()
 
@@ -385,7 +379,7 @@ with tabs[1]:
 
         table_rows.append({
             'Algorithm': algo,
-            'Role': '�� Primary Production' if algo == 'XGBoost' else 'Challenger Model',
+            'Role': '🎯 Primary Production' if algo == 'XGBoost' else 'Challenger Model',
             'Target Benchmark': target_vals.get(algo, '-'),
             'Accuracy': f"{acc * 100:.2f}%",
             'ROC-AUC': f"{auc:.4f}",

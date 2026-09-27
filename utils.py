@@ -10,6 +10,7 @@ import joblib
 import requests
 import numpy as np
 import pandas as pd
+import streamlit as st
 import plotly.graph_objects as go
 import plotly.express as px
 from typing import Dict, Any, Tuple, Optional
@@ -357,27 +358,55 @@ def _try_load_all(models_dir: str):
 
 def load_saved_artifacts(models_dir: str = "models") -> Dict[str, Any]:
     """
-    Loads all trained models, preprocessor, and metrics from disk.
-    If the committed artifacts are missing, corrupted, or were pickled with
-    a library version incompatible with what's installed in this
-    environment (e.g. a different scikit-learn/xgboost on Streamlit Cloud
-    than what trained the .joblib files), this transparently retrains
-    everything from scratch instead of crashing the app.
+    Loads all trained models, preprocessor, and metrics from disk using joblib/pickle.
+    
+    If pre-trained artifacts are missing or cannot be loaded, displays a user-friendly
+    error message and halts execution safely without raising exceptions or triggering
+    CPU throttling from dynamic retraining.
+    
+    Args:
+        models_dir: Directory path containing pre-trained .joblib model artifacts.
+    
+    Returns:
+        Dictionary with keys: 'preprocessor', 'models', 'metrics', 'feature_importance'
+    
+    Raises:
+        Calls st.stop() on failure (does not raise exceptions).
     """
     bundle = _try_load_all(models_dir)
     if bundle is not None:
         return bundle
 
-    from models.train_models import train_and_evaluate
-    train_and_evaluate(models_dir=models_dir)
+    # Pre-trained artifacts are missing or corrupted
+    st.error(
+        f"""
+        ❌ **Model Artifacts Not Found or Corrupted**
+        
+        The pre-trained machine learning models could not be loaded from `{models_dir}/` directory.
+        
+        **Required Files:**
+        - `{models_dir}/preprocessor.joblib`
+        - `{models_dir}/xgboost_model.joblib`
+        - `{models_dir}/random_forest_model.joblib`
+        - `{models_dir}/decision_tree_model.joblib`
+        - `{models_dir}/logistic_regression_model.joblib`
+        - `{models_dir}/model_metrics.json`
+        
+        **Possible Causes:**
+        1. Model files were not committed to the repository
+        2. Files are corrupted or use incompatible library versions
+        3. Directory path is incorrect
+        
+        **Solution:**
+        Ensure all `.joblib` model binaries and `.json` metadata files are present in the `models/` directory.
+        For local development, train models using `python models/train_models.py` before running the app.
+        For Streamlit Cloud deployment, commit the trained `.joblib` files to your repository.
+        
+        Contact: AIML Department, G H Raisoni College of Engineering and Management, Jalgaon
+        """
+    )
+    st.stop()
 
-    bundle = _try_load_all(models_dir)
-    if bundle is None:
-        raise RuntimeError(
-            "Model artifacts could not be loaded even after retraining. "
-            "Check that 'dataset/ecommerce_churn_dataset.csv' is present and readable."
-        )
-    return bundle
 
 def predict_single_customer(
     customer_dict: dict,
@@ -431,7 +460,7 @@ def generate_retention_recommendations(profile: dict, prob: float) -> list:
             'priority': 'priority-high' if profile.get('DaySinceLastOrder', 0) > 25 else 'priority-medium',
             'icon': '⏰',
             'title': 'Dormancy Win-Back Campaign',
-            'desc': f'Customer has been inactive for {profile.get("DaySinceLastOrder")} days. Deploy an automated personalized re-engagement push notification with 20% discount on preferred category ({profile.get("PreferedOrderCat", "General")}).'
+            'desc': f'Customer has been inactive for {profile.get("DaySinceLastOrder")} days. Deploy an automated personalized re-engagement push notification with 20% discount on preferred category.'
         })
 
     if profile.get('SatisfactionScore', 3) <= 2:

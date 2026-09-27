@@ -356,16 +356,73 @@ def _try_load_all(models_dir: str):
         return None
 
 
+def _auto_train_models(models_dir: str = "models") -> Dict[str, Any]:
+    """
+    Automatically trains and saves all model artifacts if they are missing.
+    
+    Args:
+        models_dir: Directory to save trained models to.
+    
+    Returns:
+        Dictionary with keys: 'preprocessor', 'models', 'metrics', 'feature_importance'
+    
+    Raises:
+        Calls st.stop() on training failure.
+    """
+    try:
+        st.info(
+            "🔨 **Training Models in Progress**\n\n"
+            "Pre-trained artifacts not found. Automatically training the ML ensemble. "
+            "This may take 1-2 minutes on the first run...",
+            icon="⏳"
+        )
+        
+        # Import and run the training script
+        from models.train_models import train_and_evaluate
+        
+        metadata = train_and_evaluate(models_dir=models_dir)
+        
+        st.success("✅ **Models Successfully Trained & Saved**\n\nAll artifacts are now cached for future runs.")
+        
+        # Now reload from disk
+        bundle = _try_load_all(models_dir)
+        if bundle is not None:
+            return bundle
+        else:
+            raise Exception("Training completed but artifacts could not be loaded.")
+    
+    except Exception as e:
+        st.error(
+            f"""
+            ❌ **Automatic Model Training Failed**
+            
+            An error occurred while attempting to train the models:
+            
+            ```
+            {str(e)}
+            ```
+            
+            **Troubleshooting Steps:**
+            1. Ensure the dataset file exists at `dataset/ecommerce_churn_dataset.csv`
+            2. Check that all required dependencies are installed: `pip install -r requirements.txt`
+            3. For local development, manually run: `python models/train_models.py`
+            4. Verify that the `dataset/generate_synthetic_data.py` module is present and functional
+            
+            Contact: AIML Department, G H Raisoni College of Engineering and Management, Jalgaon
+            """
+        )
+        st.stop()
+
+
 def load_saved_artifacts(models_dir: str = "models") -> Dict[str, Any]:
     """
     Loads all trained models, preprocessor, and metrics from disk using joblib/pickle.
     
-    If pre-trained artifacts are missing or cannot be loaded, displays a user-friendly
-    error message and halts execution safely without raising exceptions or triggering
-    CPU throttling from dynamic retraining.
+    If pre-trained artifacts are missing, automatically trains and saves them.
+    Falls back gracefully on training failure with detailed error messages.
     
     Args:
-        models_dir: Directory path containing pre-trained .joblib model artifacts.
+        models_dir: Directory path containing or to contain trained .joblib model artifacts.
     
     Returns:
         Dictionary with keys: 'preprocessor', 'models', 'metrics', 'feature_importance'
@@ -377,35 +434,8 @@ def load_saved_artifacts(models_dir: str = "models") -> Dict[str, Any]:
     if bundle is not None:
         return bundle
 
-    # Pre-trained artifacts are missing or corrupted
-    st.error(
-        f"""
-        ❌ **Model Artifacts Not Found or Corrupted**
-        
-        The pre-trained machine learning models could not be loaded from `{models_dir}/` directory.
-        
-        **Required Files:**
-        - `{models_dir}/preprocessor.joblib`
-        - `{models_dir}/xgboost_model.joblib`
-        - `{models_dir}/random_forest_model.joblib`
-        - `{models_dir}/decision_tree_model.joblib`
-        - `{models_dir}/logistic_regression_model.joblib`
-        - `{models_dir}/model_metrics.json`
-        
-        **Possible Causes:**
-        1. Model files were not committed to the repository
-        2. Files are corrupted or use incompatible library versions
-        3. Directory path is incorrect
-        
-        **Solution:**
-        Ensure all `.joblib` model binaries and `.json` metadata files are present in the `models/` directory.
-        For local development, train models using `python models/train_models.py` before running the app.
-        For Streamlit Cloud deployment, commit the trained `.joblib` files to your repository.
-        
-        Contact: AIML Department, G H Raisoni College of Engineering and Management, Jalgaon
-        """
-    )
-    st.stop()
+    # Pre-trained artifacts are missing or corrupted - auto-train them
+    return _auto_train_models(models_dir)
 
 
 def predict_single_customer(

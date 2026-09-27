@@ -546,20 +546,33 @@ with tabs[3]:
         st.plotly_chart(fig_rec, use_container_width=True)
 
     st.markdown("#### RFM Interactive Scatter: Recency vs. Monetary Spend")
-    sample_eda = eda_df.sample(min(800, len(eda_df)), random_state=42)
-    fig_scatter = px.scatter(
-        sample_eda,
-        x='DaySinceLastOrder',
-        y='Monetary',
-        color='Churn',
-        size='OrderCount',
-        color_discrete_map={0: '#10b981', 1: '#ef4444'},
-        hover_data=['Tenure', 'SatisfactionScore', 'Complain'],
-        labels={'DaySinceLastOrder': 'Days Since Last Order (Recency)', 'Monetary': 'Total Monetary Spend ($)'},
-        title="Recency vs Spend with Frequency (Bubble Size)"
-    )
-    fig_scatter.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(15,23,42,0.4)", font=dict(color='#cbd5e1'))
-    st.plotly_chart(fig_scatter, use_container_width=True)
+    sample_eda = eda_df.sample(min(800, len(eda_df)), random_state=42).copy()
+    
+    # Data cleaning for scatter plot
+    sample_eda['DaySinceLastOrder'] = pd.to_numeric(sample_eda['DaySinceLastOrder'], errors='coerce')
+    sample_eda['Monetary'] = pd.to_numeric(sample_eda['Monetary'], errors='coerce')
+    sample_eda['OrderCount'] = pd.to_numeric(sample_eda['OrderCount'], errors='coerce')
+    sample_eda['Churn'] = sample_eda['Churn'].astype(int).astype(str).map({'0': 'Retained', '1': 'Churned'})
+    
+    # Remove any rows with NaN in critical columns
+    sample_eda = sample_eda.dropna(subset=['DaySinceLastOrder', 'Monetary', 'OrderCount'])
+    
+    if len(sample_eda) > 0:
+        fig_scatter = px.scatter(
+            sample_eda,
+            x='DaySinceLastOrder',
+            y='Monetary',
+            color='Churn',
+            size='OrderCount',
+            color_discrete_map={'Retained': '#10b981', 'Churned': '#ef4444'},
+            hover_data=['Tenure', 'SatisfactionScore', 'Complain'],
+            labels={'DaySinceLastOrder': 'Days Since Last Order (Recency)', 'Monetary': 'Total Monetary Spend ($)'},
+            title="Recency vs Spend with Frequency (Bubble Size)"
+        )
+        fig_scatter.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(15,23,42,0.4)", font=dict(color='#cbd5e1'))
+        st.plotly_chart(fig_scatter, use_container_width=True)
+    else:
+        st.warning("Insufficient data to display scatter plot after cleaning.")
 
 # ---------------------------------------------------------
 # TAB 5: ACADEMIC PROJECT & METHODOLOGY

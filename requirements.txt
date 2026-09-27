@@ -1,0 +1,17 @@
+# E-Commerce Customer Churn Prediction
+# G H Raisoni College of Engineering and Management, Jalgaon - AIML Dept
+#
+# Upper bounds are pinned deliberately: the committed .joblib model files
+# were serialized with specific scikit-learn/xgboost versions, and loading
+# a pickle with a mismatched major version can fail. app.py auto-retrains
+# if that happens (see utils.load_saved_artifacts), but staying within
+# these ranges avoids that extra retrain step on first boot.
+streamlit>=1.30.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+numpy>=1.24.0,<2.0.0
+scikit-learn>=1.3.0,<1.6.0
+xgboost>=1.7.0,<2.2.0
+plotly>=5.18.0,<6.0.0
+joblib>=1.3.0,<2.0.0
+requests>=2.31.0,<3.0.0
+streamlit-lottie>=0.0.5

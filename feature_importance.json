@@ -1,0 +1,134 @@
+[
+  {
+    "feature": "Complain",
+    "importance": 0.2782
+  },
+  {
+    "feature": "SatisfactionScore",
+    "importance": 0.1645
+  },
+  {
+    "feature": "MaritalStatus_Single",
+    "importance": 0.049
+  },
+  {
+    "feature": "OrderCount",
+    "importance": 0.0437
+  },
+  {
+    "feature": "DaySinceLastOrder",
+    "importance": 0.0332
+  },
+  {
+    "feature": "CityTier",
+    "importance": 0.029
+  },
+  {
+    "feature": "Tenure",
+    "importance": 0.0242
+  },
+  {
+    "feature": "WarehouseToHome",
+    "importance": 0.0242
+  },
+  {
+    "feature": "MaritalStatus_Married",
+    "importance": 0.021
+  },
+  {
+    "feature": "PreferedOrderCat_Grocery",
+    "importance": 0.0181
+  },
+  {
+    "feature": "CouponUsed",
+    "importance": 0.0169
+  },
+  {
+    "feature": "PreferredPaymentMode_Credit Card",
+    "importance": 0.0167
+  },
+  {
+    "feature": "DiscountRatio",
+    "importance": 0.0162
+  },
+  {
+    "feature": "PreferredLoginDevice_Mobile Phone",
+    "importance": 0.0151
+  },
+  {
+    "feature": "HourSpendOnApp",
+    "importance": 0.0149
+  },
+  {
+    "feature": "Monetary",
+    "importance": 0.0146
+  },
+  {
+    "feature": "NumberOfAddress",
+    "importance": 0.0144
+  },
+  {
+    "feature": "PreferedOrderCat_Fashion",
+    "importance": 0.0144
+  },
+  {
+    "feature": "CashbackAmount",
+    "importance": 0.0141
+  },
+  {
+    "feature": "PreferedOrderCat_Mobile Phone",
+    "importance": 0.014
+  },
+  {
+    "feature": "OrderAmountHikeFromlastYear",
+    "importance": 0.0139
+  },
+  {
+    "feature": "PreferredLoginDevice_Phone",
+    "importance": 0.0133
+  },
+  {
+    "feature": "PreferredPaymentMode_UPI",
+    "importance": 0.0132
+  },
+  {
+    "feature": "MaritalStatus_Divorced",
+    "importance": 0.0131
+  },
+  {
+    "feature": "Gender_Female",
+    "importance": 0.0131
+  },
+  {
+    "feature": "PreferredPaymentMode_E wallet",
+    "importance": 0.0128
+  },
+  {
+    "feature": "Gender_Male",
+    "importance": 0.0128
+  },
+  {
+    "feature": "PreferedOrderCat_Laptop & Accessory",
+    "importance": 0.0126
+  },
+  {
+    "feature": "PreferredLoginDevice_Computer",
+    "importance": 0.0126
+  },
+  {
+    "feature": "PreferedOrderCat_Others",
+    "importance": 0.0126
+  },
+  {
+    "feature": "PreferredPaymentMode_Debit Card",
+    "importance": 0.0122
+  },
+  {
+    "feature": "NumberOfDeviceRegistered",
+    "importance": 0.0118
+  },
+  {
+    "feature": "PreferredPaymentMode_COD",
+    "importance": 0.0094
+  }
+]

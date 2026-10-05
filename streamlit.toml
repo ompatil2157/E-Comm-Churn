@@ -10,6 +10,6 @@ showErrorDetails = true
 toolbarMode = "viewer"
 
 [server]
-runOnSave = true
+headless = true
 maxUploadSize = 200
 enableXsrfProtection = true

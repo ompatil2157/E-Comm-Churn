@@ -16,8 +16,19 @@ import time
 import pandas as pd
 import numpy as np
 import streamlit as st
-import plotly.express as px
-import plotly.graph_objects as go
+
+try:
+    import plotly.express as px
+    import plotly.graph_objects as go
+except ModuleNotFoundError:
+    st.error(
+        "The `plotly` dependency is missing in this environment. "
+        "Install it with `pip install -r requirements.txt` and redeploy the app."
+    )
+    st.stop()
+    px = None
+    go = None
+
 import joblib
 
 # Import helper functions and design elements
@@ -233,7 +244,7 @@ with st.sidebar:
     preferred_login_device = st.selectbox("Preferred Login Device", options=['Mobile Phone', 'Phone', 'Computer'])
     preferred_payment_mode = st.selectbox("Preferred Payment Mode", options=['Debit Card', 'Credit Card', 'E wallet', 'UPI', 'COD'])
     prefered_order_cat = st.selectbox("Preferred Order Category", options=['Laptop & Accessory', 'Mobile Phone', 'Fashion', 'Grocery', 'Others'])
-
+    
     predict_btn = st.button("🚀 Analyze & Predict Churn Risk", type="primary", use_container_width=True)
 
 # Build current customer input dictionary
@@ -599,15 +610,15 @@ with tabs[4]:
        - **Monetary:** Transactional spend combined with cashback rewards
        - **Discount Usage:** `CouponUsed / (OrderCount + 1)`
     3. **Robust Preprocessing:**
-       - Numerical median imputation + standard z-score normalization.
-       - Categorical mode imputation + one-hot vectorization.
+        - Numerical median imputation + standard z-score normalization.
+        - Categorical mode imputation + one-hot vectorization.
     4. **Model Training & Tuning:**
-       - **XGBoost Classifier:** `n_estimators=220`, `max_depth=5`, `scale_pos_weight=1.65` (Primary: **91% Accuracy, 0.89 ROC-AUC**)
-       - **Random Forest:** `n_estimators=160`, balanced bagging (Benchmark: **87% Accuracy**)
-       - **Decision Tree:** CART depth constrained (Benchmark: **79% Accuracy**)
-       - **Logistic Regression:** Regularized linear baseline (Benchmark: **73% Accuracy**)
+        - **XGBoost Classifier:** `n_estimators=220`, `max_depth=5`, `scale_pos_weight=1.65` (Primary: **91% Accuracy, 0.89 ROC-AUC**)
+        - **Random Forest:** `n_estimators=160`, balanced bagging (Benchmark: **87% Accuracy**)
+        - **Decision Tree:** CART depth constrained (Benchmark: **79% Accuracy**)
+        - **Logistic Regression:** Regularized linear baseline (Benchmark: **73% Accuracy**)
     5. **Micro-Interaction UI:**
-       - Plotly animated benchmarks, live probability gauge, and Lottie-powered CSS alert micro-interactions.
+        - Plotly animated benchmarks, live probability gauge, and Lottie-powered CSS alert micro-interactions.
 
     ---
     *Developed for Academic Excellence & Industry Deployment by AIML Department, GHRCEM Jalgaon.*
@@ -623,3 +634,4 @@ st.markdown("""
     G H Raisoni College of Engineering and Management, Jalgaon | Machine Learning Capstone Project
 </div>
 """, unsafe_allow_html=True)
+

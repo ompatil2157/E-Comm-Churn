@@ -13,9 +13,47 @@ Interactive Machine Learning Dashboard featuring:
 import os
 import json
 import time
+import subprocess
+import sys
+import importlib.util
+
 import pandas as pd
 import numpy as np
 import streamlit as st
+
+
+def ensure_plotly_dependency():
+    """Install Plotly automatically when the deployment environment is missing it."""
+    if importlib.util.find_spec("plotly") is not None:
+        return True
+
+    st.warning(
+        "Plotly was not found in this environment. Installing the required dependency now..."
+    )
+
+    try:
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", "plotly>=5.18.0,<6.0.0"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except Exception as exc:
+        st.error(
+            "Automatic Plotly installation failed. Please run: `pip install -r requirements.txt` and redeploy the app."
+        )
+        st.exception(exc)
+        st.stop()
+
+    if importlib.util.find_spec("plotly") is None:
+        st.error(
+            "Plotly is still unavailable after installation. Please install it with `pip install -r requirements.txt` and redeploy the app."
+        )
+        st.stop()
+
+    return True
+
+
+ensure_plotly_dependency()
 
 try:
     import plotly.express as px
@@ -634,4 +672,3 @@ st.markdown("""
     G H Raisoni College of Engineering and Management, Jalgaon | Machine Learning Capstone Project
 </div>
 """, unsafe_allow_html=True)
-
